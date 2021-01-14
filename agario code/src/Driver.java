@@ -19,14 +19,27 @@ public class Driver extends JPanel implements MouseListener, ActionListener{
 		super.paintComponent(g); // proper redrawing of the entire screen
 		
 		for (Enemy e : enemies) e.paint(g); //go through enemies array and invoke paint method for each enemy
-		
+		Enemy ei, ej;
 		// a double for loop in order to check every possible duo of enemies in the array for collisions
 		for(int i = 0; i < 50; i++) {
 			for (int j = i + 1; j < 50; j++) {
+				ei = enemies[i];
+				ej = enemies[j];
 				//test if the enemies at index i and j collide
-				if (enemies[i].collide(enemies[j]) == true) {
-					if (enemies[i].getR() > enemies[j].getR()) enemies[j].setR(0); // if the enemy at index i is larger than the enemy at index j, delete the enemy at index j
-					if (enemies[j].getR() > enemies[i].getR()) enemies[i].setR(0); // if the enemy at index j is larger than the enemy at index i, delete the enemy at index i
+				if (ei.collide(ej) == true) {
+					if (ei.getR() > ej.getR()) {
+						// enemies[i].setR(ei.getR() + enemies[j].getR());
+						enemies[i].setR(ei.combine(ej)); // sets a new radius that adds the two areas of the enemies
+						enemies[i].setX(ei.getX() - (ei.combine(ej) - ei.getR()) / 2); // keeps the x coordinate of center the same
+						enemies[i].setY(ei.getY() - (ei.combine(ej) - ei.getR()) / 2); // keeps the y coordinate of center the same
+						enemies[j].setR(0); // if the enemy at index i is larger than the enemy at index j, delete the enemy at index j
+					}
+					if (ej.getR() > ei.getR()) {
+						enemies[j].setR(ei.combine(ej)); // sets a new radius that adds the two areas of the enemies
+						enemies[j].setX(ei.getX() - (ei.combine(ej) - ei.getR()) / 2); // keeps the x coordinate of center the same
+						enemies[j].setY(ei.getY() - (ei.combine(ej) - ei.getR()) / 2); // keeps the y coordinate of center the same
+						enemies[i].setR(0); // if the enemy at index j is larger than the enemy at index i, delete the enemy at index i
+					}
 				}
 			}
 		}

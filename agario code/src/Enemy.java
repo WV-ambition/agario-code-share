@@ -17,8 +17,8 @@ public class Enemy {
 		r = (int)(Math.random()*31) + 10; //random radius from 10 to 40
 		
 		//speed is inversely proportional to radius
-		vx = 45 / r; // a radius of 1 will result in a speed of 45
-		vy = 45 / r; // a radius of 45 will result in a speed of 1
+		vx = 80 / r; // a radius of 1 will result in a speed of 45
+		vy = 80 / r; // a radius of 45 will result in a speed of 1
 		if (Math.random() > 0.5) vx *= -1; // half the time go in the negative x direction
 		if (Math.random() > 0.5) vy *= -1; // half the time go in the negative y direction
 		
@@ -34,10 +34,10 @@ public class Enemy {
 		update(); // method that helps updating variables
 		
 		// bounce the enemies off the sides
-		if (x < 0) vx *= -1; // bounces off left
-		if (y < 0) vy *= -1; // bounces off top
-		if (x + 2 * r > 800) vx *= -1; // bounces off right
-		if (y + 2 * r > 600) vy *= -1; // bounces off bottom 	
+		if (x < 0) vx = Math.abs(vx); // bounces off left
+		if (y < 0) vy = Math.abs(vy); // bounces off top
+		if (x + 2 * r > 780) vx = -Math.abs(vx); // bounces off right
+		if (y + 2 * r > 560) vy = -Math.abs(vy); // bounces off bottom 	
 		
 		x += vx; // adds speed of x to x
 		y += vy; // adds speed of y to y
@@ -85,4 +85,12 @@ public class Enemy {
 
 	public Color getC() {return c;} // getter for c variable
 	public void setColor(Color c) {this.c = c;} // setter for c variable
+	
+	public int combine(Enemy e) {
+		double a1 = r * r * Math.PI;
+		double a2 = e.r * e.r * Math.PI;
+		double anew = a1 + a2;
+		int newr = (int)Math.sqrt(anew / Math.PI);
+		return newr;
+	}
 }
