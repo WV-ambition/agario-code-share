@@ -8,6 +8,7 @@ public class Enemy {
 	private int r; // radius of the enemy
 	private int vx, vy; // x and y speed of the enemy
 	private Color c; // color of the enemy
+	private int time = 0; // time variable cos why not
 
 	//default constructor accepting 0 parameters
 	public Enemy() {
@@ -17,8 +18,8 @@ public class Enemy {
 		r = (int)(Math.random()*31) + 10; //random radius from 10 to 40
 		
 		//speed is inversely proportional to radius
-		vx = 80 / r; // a radius of 1 will result in a speed of 45
-		vy = 80 / r; // a radius of 45 will result in a speed of 1
+		vx = 100 / r + 1; // a radius of 1 will result in a speed of 45
+		vy = 100 / r + 1; // a radius of 45 will result in a speed of 1
 		if (Math.random() > 0.5) vx *= -1; // half the time go in the negative x direction
 		if (Math.random() > 0.5) vy *= -1; // half the time go in the negative y direction
 		
@@ -33,11 +34,21 @@ public class Enemy {
 	public void paint(Graphics g) {
 		update(); // method that helps updating variables
 		
-		// bounce the enemies off the sides
+		/* bounce the enemies off the sides
 		if (x < 0) vx = Math.abs(vx); // bounces off left
 		if (y < 0) vy = Math.abs(vy); // bounces off top
 		if (x + 2 * r > 780) vx = -Math.abs(vx); // bounces off right
 		if (y + 2 * r > 560) vy = -Math.abs(vy); // bounces off bottom 	
+		*/
+		
+		time++; // increment time by 1 every time enemy is painted
+		
+		// after 20 paints, randomize direction again
+		if (time == 20) {
+			if (Math.random() > 0.5) vx *= -1; // half the time go in the negative x direction
+			if (Math.random() > 0.5) vy *= -1; // half the time go in the negative y direction
+			time = 0;
+		}
 		
 		x += vx; // adds speed of x to x
 		y += vy; // adds speed of y to y
@@ -46,8 +57,23 @@ public class Enemy {
 		g.fillOval(x, y, r*2, r*2); // draws the enemy
 	}
 	
-	// anything that updates the variables of this object 
-	public void update() {}
+	// updates the enemy velocity every time it is painted
+	public void update() {
+		// fit the velocities to be relative to radiuses
+		if (r != 0) { 
+			if (vx > 0) vx = 100 / r + 1; 
+			else vx = - 100 / r - 1;
+			if (vy > 0) vy = 100 / r + 1;
+			else vy = - 100 / r - 1;
+		}
+	}
+	
+	//updates the position relative to the player cell
+	public void updatePos(int pvx, int pvy) {
+		x -= pvx;
+		y -= pvy;
+	}
+
 	
 	// method to detect if two cells are colliding
 	public boolean collide(Enemy e) {
@@ -67,6 +93,14 @@ public class Enemy {
         else return false; //else the distance is larger than the radius of the larger cell so return false
     }
 	
+	public int combine(Enemy e) {
+		double a1 = r * r * Math.PI; // area of the first enemy
+		double a2 = e.r * e.r * Math.PI; // area of the second enemy
+		double anew = a1 + a2; // combined area
+		int newr = (int) Math.sqrt(anew / Math.PI); // radius of combined enemy
+		return newr; // returns new radius
+	}
+	
 	//getter and setters
 	public int getX() {return x;} // getter for x variable
 	public void setX(int x) {this.x = x;} // setter for x variable 
@@ -85,12 +119,4 @@ public class Enemy {
 
 	public Color getC() {return c;} // getter for c variable
 	public void setColor(Color c) {this.c = c;} // setter for c variable
-	
-	public int combine(Enemy e) {
-		double a1 = r * r * Math.PI;
-		double a2 = e.r * e.r * Math.PI;
-		double anew = a1 + a2;
-		int newr = (int)Math.sqrt(anew / Math.PI);
-		return newr;
-	}
 }
